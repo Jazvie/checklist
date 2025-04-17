@@ -60,6 +60,7 @@ class ChecklistUpdate(ChecklistBase):
 class Checklist(ChecklistBase):
     id: int
     public_link: str
+    edit_token: str
     created_at: datetime.datetime
     categories: List[Category] = []
     class Config:

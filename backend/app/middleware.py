@@ -1,6 +1,7 @@
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+import re
 
 class SharedChecklistMiddleware(BaseHTTPMiddleware):
     """
@@ -34,5 +35,24 @@ class SharedChecklistMiddleware(BaseHTTPMiddleware):
                 content={"detail": "You don't have permission to edit this checklist. Use the edit link to modify the structure."}
             )
         
-        # For edit token access or other API endpoints, proceed normally
+        # For direct API access (not via public or edit links), require edit token in the path or query
+        # This applies to PUT, DELETE, and POST operations on checklists, categories, and items
+        if method in ["PUT", "DELETE"] or (method == "POST" and "uploads" not in path):
+            # Skip this check for the initial checklist creation endpoint and cloning
+            if path == "/checklists/" and method == "POST" or "clone" in path:
+                return await call_next(request)
+                
+            # Skip this check if accessing via edit token
+            if "checklists/edit/" in path:
+                return await call_next(request)
+                
+            # For all other edit operations, require the edit_token parameter
+            query_params = request.query_params
+            if "edit_token" not in query_params:
+                return JSONResponse(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    content={"detail": "Edit operations require an edit_token parameter. Use the edit link to modify the structure."}
+                )
+        
+        # For all other requests, proceed normally
         return await call_next(request)
