@@ -9,6 +9,7 @@ class Checklist(Base):
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     public_link = Column(String, unique=True, index=True)
+    edit_token = Column(String, unique=True, index=True)  # Token for edit access
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     categories = relationship("Category", back_populates="checklist", cascade="all, delete-orphan")
