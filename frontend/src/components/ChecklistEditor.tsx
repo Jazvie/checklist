@@ -1,0 +1,1 @@
+// Checklist editor component skeleton

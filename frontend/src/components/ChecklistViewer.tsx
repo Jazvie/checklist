@@ -1,0 +1,1 @@
+// Checklist viewer component skeleton
