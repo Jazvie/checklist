@@ -38,32 +38,42 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       return;
     }
 
+    // Check if trying to upload multiple files when not allowed
+    if (!allowMultiple && files.length > 1) {
+      setError('This item only allows one file. Please select only one file.');
+      return;
+    }
+
     setUploading(true);
     setError(null);
 
     try {
-      const file = files[0]; // For now, we'll handle one file at a time
-      const formData = new FormData();
-      formData.append('file', file);
+      // Process all selected files (if multiple is allowed) or just the first one
+      const filesToProcess = allowMultiple ? Array.from(files) : [files[0]];
       
-      // Optional: Add uploader name (could be from user profile in a real app)
-      formData.append('uploader', 'Anonymous User');
-      
-      if (isNewItem) {
-        // For new items being created, we'll just store the file temporarily
-        // and handle the actual upload when the checklist is saved
-        const mockUpload: FileUpload = {
-          id: Math.floor(Math.random() * 10000), // Temporary ID
-          filename: file.name,
-          uploader: 'Anonymous User',
-          item_id: itemId,
-          created_at: new Date().toISOString()
-        };
-        onUploadSuccess(mockUpload);
-      } else {
-        // For existing items, upload directly to the server
-        const uploadedFile = await uploadFile(itemId, formData);
-        onUploadSuccess(uploadedFile);
+      for (const file of filesToProcess) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Optional: Add uploader name (could be from user profile in a real app)
+        formData.append('uploader', 'Anonymous User');
+        
+        if (isNewItem) {
+          // For new items being created, we'll just store the file temporarily
+          // and handle the actual upload when the checklist is saved
+          const mockUpload: FileUpload = {
+            id: Math.floor(Math.random() * 10000), // Temporary ID
+            filename: file.name,
+            uploader: 'Anonymous User',
+            item_id: itemId,
+            created_at: new Date().toISOString()
+          };
+          onUploadSuccess(mockUpload);
+        } else {
+          // For existing items, upload directly to the server
+          const uploadedFile = await uploadFile(itemId, formData);
+          onUploadSuccess(uploadedFile);
+        }
       }
       
       // Reset the file input
@@ -109,6 +119,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           disabled={uploading || disabled}
           className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           accept=".txt,.pdf,.xlsx,.doc,.docx"
+          multiple={allowMultiple}
         />
         {uploading && <span className="ml-2 text-gray-500 text-sm">Uploading...</span>}
       </div>
