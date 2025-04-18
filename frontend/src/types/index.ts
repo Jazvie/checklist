@@ -8,9 +8,15 @@ export interface FileUpload {
   created_at: string;
 }
 
+export interface ItemCreate {
+  name: string;
+  allow_multiple_files?: boolean;
+}
+
 export interface Item {
   id: number;
   title: string;
+  name?: string;
   description?: string;
   completed: boolean;
   category_id: number;
@@ -18,9 +24,15 @@ export interface Item {
   allow_multiple_files: boolean;
 }
 
+export interface CategoryCreate {
+  name: string;
+  items?: ItemCreate[];
+}
+
 export interface Category {
   id: number;
   title: string;
+  name?: string;
   checklist_id: number;
   items: Item[];
 }
@@ -28,6 +40,7 @@ export interface Category {
 export interface Checklist {
   id: number;
   title: string;
+  description?: string;
   public_link: string;
   edit_token: string;
   categories: Category[];
