@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { getChecklists } from '../api';
+import { getChecklists, cloneChecklist, deleteChecklist } from '../api';
 import { Checklist } from '../types';
 
 const ChecklistList: React.FC = () => {
   const [checklists, setChecklists] = useState<Checklist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<{[id: number]: string}>({});
 
-  useEffect(() => {
+  const loadChecklists = () => {
+    setLoading(true);
     getChecklists()
       .then(data => {
         setChecklists(data);
@@ -17,7 +19,51 @@ const ChecklistList: React.FC = () => {
         setError('Failed to load checklists. Please try again later.');
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    loadChecklists();
   }, []);
+  
+  const handleClone = async (e: React.MouseEvent, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      setActionLoading(prev => ({ ...prev, [id]: 'clone' }));
+      await cloneChecklist(id);
+      loadChecklists();
+    } catch (err) {
+      setError('Failed to clone checklist. Please try again.');
+    } finally {
+      setActionLoading(prev => {
+        const newState = { ...prev };
+        delete newState[id];
+        return newState;
+      });
+    }
+  };
+  
+  const handleDelete = async (e: React.MouseEvent, id: number, editToken: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (window.confirm('Are you sure you want to delete this checklist?')) {
+      try {
+        setActionLoading(prev => ({ ...prev, [id]: 'delete' }));
+        await deleteChecklist(id, editToken);
+        loadChecklists();
+      } catch (err) {
+        setError('Failed to delete checklist. Please try again.');
+      } finally {
+        setActionLoading(prev => {
+          const newState = { ...prev };
+          delete newState[id];
+          return newState;
+        });
+      }
+    }
+  };
 
   if (loading) return (
     <div className="max-w-4xl mx-auto p-6">
@@ -125,7 +171,7 @@ const ChecklistList: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-lg text-primary-700 mb-1 truncate">{cl.title}</h2>
                 </div>
-                <div className="bg-primary-50 p-1 rounded-full flex-shrink-0 ml-2 w-6 h-6 flex items-center justify-center">
+                <div className="bg-primary-50 p-1 rounded-full flex-shrink-0 ml-1 w-8 h-8 flex items-center justify-center">
                   <span className="text-primary-600 text-xs">→</span>
                 </div>
               </div>
@@ -157,6 +203,61 @@ const ChecklistList: React.FC = () => {
                   )}
                 </div>
               )}
+              
+              <div className="mt-auto pt-4 flex items-center gap-2 justify-between border-t border-gray-100 mt-4">
+                <button 
+                  onClick={(e) => handleClone(e, cl.id)}
+                  disabled={actionLoading[cl.id] === 'clone'}
+                  style={{
+                    backgroundColor: '#ebf5ff',
+                    color: '#2563eb',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                  className="hover:bg-blue-100 transition-colors"
+                  title="Clone checklist"
+                >
+                  {actionLoading[cl.id] === 'clone' ? (
+                    <span className="animate-pulse">Cloning...</span>
+                  ) : (
+                    <>
+                      <span>+</span>
+                      <span>Clone</span>
+                    </>
+                  )}
+                </button>
+                <button 
+                  onClick={(e) => handleDelete(e, cl.id, cl.edit_token)}
+                  disabled={actionLoading[cl.id] === 'delete'}
+                  style={{
+                    backgroundColor: '#fee2e2',
+                    color: '#dc2626',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                  className="hover:bg-red-100 transition-colors"
+                  title="Delete checklist"
+                >
+                  {actionLoading[cl.id] === 'delete' ? (
+                    <span className="animate-pulse">Deleting...</span>
+                  ) : (
+                    <>
+                      <span>×</span>
+                      <span>Delete</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </a>
           ))}
         </div>
