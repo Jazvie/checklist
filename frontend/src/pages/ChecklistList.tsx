@@ -53,13 +53,22 @@ const ChecklistList: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-10">
         <h1 className="text-2xl font-bold text-gray-800">My Checklists</h1>
         <a 
-          href="/checklists/create" 
-          className="btn btn-primary rounded-lg"
+          href="/create" 
+          className="btn btn-primary rounded-lg flex items-center gap-2"
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '10px 16px',
+            borderRadius: '8px',
+            fontWeight: '500',
+            transition: 'all 0.2s ease'
+          }}
         >
-          New Checklist
+          <span style={{ fontSize: '18px', lineHeight: '1' }}>+</span>
+          <span>New Checklist</span>
         </a>
       </div>
       
@@ -79,31 +88,37 @@ const ChecklistList: React.FC = () => {
           </div>
           <h3 className="text-xl font-medium text-gray-800 mb-3">No checklists yet</h3>
           <p className="text-gray-500 mb-6">Create your first checklist to get started</p>
-          <a href="/checklists/create" style={{
+          <a href="/create" style={{
               backgroundColor: '#2563eb',
               color: 'white',
               padding: '10px 16px',
               borderRadius: '8px',
               fontWeight: '500',
-              display: 'inline-block',
-              transition: 'background-color 0.2s ease'
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s ease'
             }}
             className="hover:bg-blue-700">
-            Create Checklist
+            <span style={{ fontSize: '18px', lineHeight: '1' }}>+</span>
+            <span>New Checklist</span>
           </a>
         </div>
       ) : (
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem'}} className="grid-container">
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '2.5rem', padding: '1rem'}} className="grid-container">
           {checklists.map(cl => (
             <a key={cl.id} href={`/checklists/${cl.id}`} style={{
                 display: 'block',
                 height: '100%',
                 backgroundColor: 'white',
                 borderRadius: '12px',
-                padding: '16px',
+                padding: '20px',
                 border: '2px solid #e5e7eb',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                margin: '0',
+                position: 'relative',
+                overflow: 'hidden'
               }} 
               className="h-full flex flex-col hover:shadow-xl hover:border-blue-200">
               <div className="flex justify-between items-start mb-3">
