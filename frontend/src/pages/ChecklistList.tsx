@@ -52,7 +52,7 @@ const ChecklistList: React.FC = () => {
   );
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="container mx-auto p-4 sm:p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">My Checklists</h1>
         <a 
@@ -75,41 +75,41 @@ const ChecklistList: React.FC = () => {
           </a>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem'}} className="grid-container">
           {checklists.map(cl => (
-            <a key={cl.id} href={`/checklists/${cl.id}`} className="card hover:shadow-lg transition-shadow duration-200 bg-white rounded-lg p-4 border border-gray-100 block">
-              <div className="flex justify-between items-start">
+            <a key={cl.id} href={`/checklists/${cl.id}`} style={{display: 'block', height: '100%'}} className="card hover:shadow-lg transition-shadow duration-200 bg-white rounded-lg p-4 border border-gray-200 shadow h-full flex flex-col">
+              <div className="flex justify-between items-start mb-3">
                 <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-lg text-primary-700 mb-1 truncate">{cl.title}</h2>
-                  {cl.description && (
-                    <p className="text-gray-600 text-sm line-clamp-2 mb-2">{cl.description}</p>
-                  )}
-                  <div className="mt-3 flex items-center text-xs text-gray-500">
-                    <span className="flex items-center">
-                      <span className="w-4 h-4 mr-1 inline-block bg-primary-100 rounded-full"></span>
-                      {cl.categories?.length || 0} categories
-                    </span>
-                  </div>
                 </div>
                 <div className="bg-primary-50 p-1 rounded-full flex-shrink-0 ml-2 w-6 h-6 flex items-center justify-center">
                   <span className="text-primary-600 text-xs">→</span>
                 </div>
               </div>
               
+              {cl.description && (
+                <p className="text-gray-600 text-sm line-clamp-2 mb-3">{cl.description}</p>
+              )}
+              
+              <div className="mt-auto pt-2 flex items-center text-xs text-gray-500">
+                <span className="flex items-center">
+                  <span className="w-4 h-4 mr-1 inline-block bg-primary-100 rounded-full"></span>
+                  {cl.categories?.length || 0} categories
+                </span>
+              </div>
+              
               {/* Display categories in a grid if they exist */}
               {cl.categories && cl.categories.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  {cl.categories.slice(0, 4).map((cat, idx) => (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {cl.categories.slice(0, 2).map((cat, idx) => (
                     <div key={idx} className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center overflow-hidden">
-                      <svg className="w-4 h-4 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                      <span className="text-sm font-medium truncate">{cat.name}</span>
+                      <span className="w-3 h-3 mr-1 inline-block bg-primary-100 rounded-full"></span>
+                      <span className="text-xs font-medium truncate">{cat.name}</span>
                     </div>
                   ))}
-                  {cl.categories.length > 4 && (
+                  {cl.categories.length > 2 && (
                     <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center justify-center">
-                      <span className="text-sm text-gray-500">+{cl.categories.length - 4} more</span>
+                      <span className="text-xs text-gray-500">+{cl.categories.length - 2} more</span>
                     </div>
                   )}
                 </div>
