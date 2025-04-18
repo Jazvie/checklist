@@ -105,6 +105,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     }
   };
   
+  // Get the download URL for a file
   const getFileDownloadUrl = (fileId: number) => {
     return `${API_BASE}/uploads/${fileId}/download`;
   };
@@ -133,29 +134,30 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             {existingFiles.map(file => (
               <li key={file.id} className="flex items-center justify-between text-gray-700 mb-1">
                 <div>
-                  {!isNewItem ? (
-                    <a 
-                      href={getFileDownloadUrl(file.id)} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {file.filename}
-                    </a>
-                  ) : (
-                    <span>{file.filename}</span>
-                  )}
+                  <span className="font-medium">{file.filename}</span>
                   <span className="text-xs text-gray-500 ml-2">
                     {file.uploader && `(by ${file.uploader})`}
                   </span>
                 </div>
-                <button 
-                  type="button" 
-                  onClick={() => handleDeleteFile(file.id)}
-                  className="text-red-600 text-xs hover:underline"
-                >
-                  Delete
-                </button>
+                <div className="flex space-x-2">
+                  {!isNewItem && (
+                    <a 
+                      href={getFileDownloadUrl(file.id)} 
+                      download
+                      className="bg-blue-600 text-white text-xs px-2 py-1 rounded hover:bg-blue-700"
+                      title="Download file"
+                    >
+                      Download
+                    </a>
+                  )}
+                  <button 
+                    type="button" 
+                    onClick={() => handleDeleteFile(file.id)}
+                    className="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
