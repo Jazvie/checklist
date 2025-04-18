@@ -11,6 +11,7 @@ export interface FileUpload {
 export interface ItemCreate {
   name: string;
   allow_multiple_files?: boolean;
+  temp_id?: number; // Temporary ID for tracking files during creation
 }
 
 export interface Item {

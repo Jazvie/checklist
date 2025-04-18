@@ -28,4 +28,27 @@ export async function deleteChecklist(id: number, editToken: string): Promise<vo
   await axios.delete(`${API_BASE}/checklists/${id}?edit_token=${editToken}`);
 }
 
+export async function uploadFile(itemId: number, formData: FormData): Promise<FileUpload> {
+  const res = await axios.post(`${API_BASE}/items/${itemId}/uploads/`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return res.data;
+}
+
+export async function getItemFiles(itemId: number): Promise<FileUpload[]> {
+  const res = await axios.get(`${API_BASE}/items/${itemId}/uploads/`);
+  return res.data;
+}
+
+export async function deleteFile(fileId: number): Promise<void> {
+  await axios.delete(`${API_BASE}/uploads/${fileId}`);
+}
+
+export async function cloneChecklist(checklistId: number): Promise<Checklist> {
+  const res = await axios.post(`${API_BASE}/checklists/${checklistId}/clone`);
+  return res.data;
+}
+
 // Add more API functions as you build out the frontend
