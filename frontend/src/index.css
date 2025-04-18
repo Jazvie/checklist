@@ -34,6 +34,13 @@ svg {
     width: 1em;
     height: 1em;
   }
+  /* Maintain consistent link colors */
+  a.checklist-box,
+  a.checklist-box:visited,
+  a.checklist-box:hover,
+  a.checklist-box:active {
+    color: inherit;
+  }
 }
 
 @layer components {

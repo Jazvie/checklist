@@ -151,7 +151,7 @@ const ChecklistList: React.FC = () => {
           </a>
         </div>
       ) : (
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '2.5rem', padding: '1rem'}} className="grid-container">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2.5rem', padding: '1rem' }} className="grid-container">
           {checklists.map(cl => (
             <a key={cl.id} href={`/checklists/${cl.id}`} style={{
                 display: 'block',
@@ -164,10 +164,11 @@ const ChecklistList: React.FC = () => {
                 transition: 'all 0.2s ease',
                 margin: '0',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                textDecoration: 'none'
               }} 
-              className="h-full flex flex-col hover:shadow-xl hover:border-blue-200">
-              <div style={{ height: '180px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              className="h-full flex flex-col hover:shadow-xl hover:border-blue-200 no-underline checklist-box">
+              <div style={{ height: '220px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1 min-w-0">
                     <h2 className="font-semibold text-lg text-primary-700 mb-1 truncate">{cl.title}</h2>
@@ -177,9 +178,13 @@ const ChecklistList: React.FC = () => {
                   </div>
                 </div>
                 
+                {cl.description && (
+                  <p className="text-blue-600 text-sm mb-3 line-clamp-3 overflow-hidden" style={{ textDecoration: 'underline' }}>{cl.description}</p>
+                )}
+                
                 <div className="text-sm text-gray-600 mb-2">
                   <div className="flex items-center">
-                    <span>{cl.categories.length || 0} categories</span>
+                    <span>{cl.categories.length || 0} {cl.categories.length === 1 ? 'category' : 'categories'}</span>
                   </div>
                 </div>
                 
@@ -188,7 +193,7 @@ const ChecklistList: React.FC = () => {
                     {cl.categories.slice(0, 2).map((cat, idx) => (
                       <div key={idx} className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center overflow-hidden">
                         <span className="w-3 h-3 mr-1 inline-block bg-primary-100 rounded-full"></span>
-                        <span className="text-xs font-medium truncate">{cat.name}</span>
+                        <span className="text-xs font-medium truncate no-underline" style={{ textDecoration: 'none' }}>{cat.name}</span>
                       </div>
                     ))}
                     {cl.categories.length > 2 && (

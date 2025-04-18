@@ -173,59 +173,131 @@ const CreateChecklist: React.FC = () => {
   };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Create Checklist</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-semibold">Title</label>
-          <input className="border rounded w-full p-2" value={title} onChange={e => setTitle(e.target.value)} required />
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Create Checklist</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Title Box */}
+        <div className="bg-white rounded-lg shadow-md p-5 border border-gray-200">
+          <label className="block font-semibold text-gray-700 mb-2">Title</label>
+          <input 
+            className="border border-gray-300 rounded-lg w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+            value={title} 
+            onChange={e => setTitle(e.target.value)} 
+            placeholder="Enter checklist title"
+            required 
+          />
         </div>
-        <div>
-          <label className="block font-semibold">Description</label>
-          <textarea className="border rounded w-full p-2" value={description} onChange={e => setDescription(e.target.value)} />
+
+        {/* Description Box */}
+        <div className="bg-white rounded-lg shadow-md p-5 border border-gray-200">
+          <label className="block font-semibold text-gray-700 mb-2">Description</label>
+          <textarea 
+            className="border border-gray-300 rounded-lg w-full p-3 min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+            value={description} 
+            onChange={e => setDescription(e.target.value)} 
+            placeholder="Enter checklist description (optional)"
+          />
         </div>
-        <div>
-          <label className="block font-semibold mb-2">Categories</label>
+
+        {/* Categories Section */}
+        <div className="space-y-4">
+          <label className="block font-semibold text-gray-700 mb-2">Categories</label>
+          
+          {categories.length === 0 && (
+            <div className="bg-gray-50 rounded-lg p-8 text-center border border-gray-200">
+              <p className="text-gray-500 mb-4">No categories added yet</p>
+              <button 
+                type="button" 
+                className="bg-blue-50 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-100 transition-colors"
+                onClick={handleAddCategory}
+              >
+                + Add Your First Category
+              </button>
+            </div>
+          )}
+
+          {/* Category List */}
           {categories.map((cat, idx) => (
-            <div key={idx} className="border rounded p-2 mb-2">
-              <div className="flex items-center mb-2">
-                <input className="border rounded flex-1 p-1 mr-2" placeholder="Category Name" value={cat.name} onChange={e => handleCategoryName(idx, e.target.value)} required />
-                <button type="button" className="text-red-600 ml-2" onClick={() => handleRemoveCategory(idx)}>Remove</button>
+            <div key={idx} className="bg-white rounded-lg shadow-md p-5 border border-gray-200">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                <div className="flex-1">
+                  <label className="block text-sm text-gray-500 mb-1">Category Name</label>
+                  <input 
+                    className="border border-gray-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                    placeholder="Enter category name" 
+                    value={cat.name} 
+                    onChange={e => handleCategoryName(idx, e.target.value)} 
+                    required 
+                  />
+                </div>
+                <button 
+                  type="button" 
+                  className="ml-4 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors" 
+                  onClick={() => handleRemoveCategory(idx)}
+                >
+                  Remove
+                </button>
               </div>
-              <div className="ml-4">
-                <label className="block font-semibold">Items</label>
+
+              {/* Items Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="font-medium text-gray-700">Items</label>
+                  <button 
+                    type="button" 
+                    className="text-blue-600 text-sm bg-blue-50 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors" 
+                    onClick={() => handleAddItem(idx)}
+                  >
+                    + Add Item
+                  </button>
+                </div>
+
+                {/* Empty state for items */}
+                {(!cat.items || cat.items.length === 0) && (
+                  <div className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
+                    <p className="text-gray-500 text-sm">No items added to this category yet</p>
+                  </div>
+                )}
+
+                {/* Item List */}
                 {(cat.items || []).map((item, iidx) => (
-                  <div key={iidx} className="mb-3 border-l-2 border-gray-200 pl-2">
-                    <div className="flex items-center mb-1">
-                      <input 
-                        className="border rounded flex-1 p-1 mr-2" 
-                        placeholder="Item Name" 
-                        value={item.name} 
-                        onChange={e => handleItemChange(idx, iidx, 'name', e.target.value)} 
-                        required 
-                      />
-                      <label className="flex items-center mr-2">
+                  <div key={iidx} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                    <div className="flex items-center mb-2">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Item Name</label>
                         <input 
-                          type="checkbox" 
-                          checked={item.allow_multiple_files} 
-                          onChange={e => handleItemChange(idx, iidx, 'allow_multiple_files', e.target.checked)} 
+                          className="border border-gray-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                          placeholder="Enter item name" 
+                          value={item.name} 
+                          onChange={e => handleItemChange(idx, iidx, 'name', e.target.value)} 
+                          required 
                         />
-                        <span className="ml-1 text-xs">Allow multiple files</span>
-                      </label>
-                      <button 
-                        type="button" 
-                        className="text-red-600 ml-2" 
-                        onClick={() => handleRemoveItem(idx, iidx)}
-                      >
-                        Remove
-                      </button>
+                      </div>
+                      <div className="ml-3 flex items-center">
+                        <label className="flex items-center bg-white px-3 py-2 rounded-md border border-gray-200">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2 h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                            checked={item.allow_multiple_files} 
+                            onChange={e => handleItemChange(idx, iidx, 'allow_multiple_files', e.target.checked)} 
+                          />
+                          <span className="text-xs">Allow multiple files</span>
+                        </label>
+                        <button 
+                          type="button" 
+                          className="ml-2 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors" 
+                          onClick={() => handleRemoveItem(idx, iidx)}
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
                     
                     {/* File uploader for this item */}
-                    <div className="ml-4 mt-1">
+                    <div className="mt-2 bg-white rounded-md p-2 border border-gray-200">
                       <button 
                         type="button"
-                        className="text-xs text-blue-600 hover:underline"
+                        className="text-xs text-blue-600 hover:underline flex items-center"
                         onClick={() => {
                           // Initialize the files array for this item if it doesn't exist
                           if (!itemFiles[item.temp_id!]) {
@@ -233,32 +305,62 @@ const CreateChecklist: React.FC = () => {
                           }
                         }}
                       >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                        </svg>
                         {itemFiles[item.temp_id!] ? 
                           `${itemFiles[item.temp_id!]?.length || 0} files selected` : 
                           'Add files to this item'}
                       </button>
                       
                       {itemFiles[item.temp_id!] && (
-                        <FileUploader 
-                          itemId={item.temp_id!}
-                          allowMultiple={item.allow_multiple_files || false}
-                          existingFiles={itemFiles[item.temp_id!] || []}
-                          onUploadSuccess={(newFile) => handleFileUploadSuccess(item.temp_id!, newFile)}
-                          onDeleteSuccess={(fileId) => handleFileDeleteSuccess(item.temp_id!, fileId)}
-                          isNewItem={true}
-                        />
+                        <div className="mt-2">
+                          <FileUploader 
+                            itemId={item.temp_id!}
+                            allowMultiple={item.allow_multiple_files || false}
+                            existingFiles={itemFiles[item.temp_id!] || []}
+                            onUploadSuccess={(newFile) => handleFileUploadSuccess(item.temp_id!, newFile)}
+                            onDeleteSuccess={(fileId) => handleFileDeleteSuccess(item.temp_id!, fileId)}
+                            isNewItem={true}
+                          />
+                        </div>
                       )}
                     </div>
                   </div>
                 ))}
-                <button type="button" className="text-blue-600 text-xs mt-1" onClick={() => handleAddItem(idx)}>+ Add Item</button>
               </div>
             </div>
           ))}
-          <button type="button" className="text-blue-600 mt-2" onClick={handleAddCategory}>+ Add Category</button>
+
+          {/* Add Category Button (when categories exist) */}
+          {categories.length > 0 && (
+            <button 
+              type="button" 
+              className="w-full bg-gray-50 text-blue-600 py-3 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors mt-4" 
+              onClick={handleAddCategory}
+            >
+              + Add Another Category
+            </button>
+          )}
         </div>
-        {error && <div className="text-red-600">{error}</div>}
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" disabled={loading}>{loading ? 'Creating...' : 'Create Checklist'}</button>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-lg border border-red-200">
+            {error}
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <div className="pt-4">
+          <button 
+            type="submit" 
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium" 
+            disabled={loading}
+          >
+            {loading ? 'Creating...' : 'Create Checklist'}
+          </button>
+        </div>
       </form>
     </div>
   );
