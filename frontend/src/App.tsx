@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import ChecklistList from './pages/ChecklistList';
 import CreateChecklist from './pages/CreateChecklist';
 import ChecklistDetail from './pages/ChecklistDetail';
+import EditChecklist from './pages/EditChecklist';
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -22,6 +23,8 @@ function App() {
       return <ChecklistList />;
     } else if (currentPath === '/create') {
       return <CreateChecklist />;
+    } else if (currentPath.startsWith('/edit-checklist/')) {
+      return <EditChecklist />;
     } else if (currentPath.startsWith('/checklists/')) {
       return <ChecklistDetail />;
     } else {

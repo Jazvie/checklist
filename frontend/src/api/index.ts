@@ -19,13 +19,13 @@ export async function createChecklist(data: any): Promise<any> {
   return res.data;
 }
 
-export async function updateChecklist(id: number, data: any): Promise<any> {
-  const res = await axios.put(`${API_BASE}/checklists/${id}`, data);
+export async function updateChecklist(id: number, data: any, editToken: string): Promise<any> {
+  const res = await axios.put(`${API_BASE}/checklists/${id}?edit_token=${editToken}`, data);
   return res.data;
 }
 
-export async function deleteChecklist(id: number): Promise<void> {
-  await axios.delete(`${API_BASE}/checklists/${id}`);
+export async function deleteChecklist(id: number, editToken: string): Promise<void> {
+  await axios.delete(`${API_BASE}/checklists/${id}?edit_token=${editToken}`);
 }
 
 // Add more API functions as you build out the frontend

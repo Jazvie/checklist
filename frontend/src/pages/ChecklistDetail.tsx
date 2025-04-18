@@ -45,14 +45,15 @@ const ChecklistDetail: React.FC = () => {
   };
   
   const handleDelete = async () => {
-    if (!id || !window.confirm('Are you sure you want to delete this checklist?')) return;
+    if (!id || !window.confirm('Are you sure you want to delete this checklist?') || !checklist) return;
     
     setIsDeleting(true);
     try {
-      await deleteChecklist(Number(id));
+      // Use the checklist's edit_token for authorization
+      await deleteChecklist(Number(id), checklist.edit_token);
       window.location.href = '/';
     } catch (err) {
-      setError('Failed to delete checklist.');
+      setError('Failed to delete checklist. Make sure you have edit permission.');
       setIsDeleting(false);
     }
   };
