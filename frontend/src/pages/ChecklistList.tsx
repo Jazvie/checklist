@@ -64,20 +64,48 @@ const ChecklistList: React.FC = () => {
       </div>
       
       {checklists.length === 0 ? (
-        <div className="card bg-white p-8 text-center">
-          <div className="w-12 h-12 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-white text-2xl font-bold">+</span>
+        <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '32px',
+            border: '2px solid #e5e7eb',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            textAlign: 'center',
+            maxWidth: '400px',
+            margin: '0 auto'
+          }}>
+          <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-6 flex items-center justify-center">
+            <span className="text-blue-600 text-3xl font-bold">+</span>
           </div>
-          <h3 className="text-lg font-medium text-gray-700 mb-2">No checklists yet</h3>
-          <p className="text-gray-500 mb-4">Create your first checklist to get started</p>
-          <a href="/checklists/create" className="btn btn-primary inline-block rounded-lg">
+          <h3 className="text-xl font-medium text-gray-800 mb-3">No checklists yet</h3>
+          <p className="text-gray-500 mb-6">Create your first checklist to get started</p>
+          <a href="/checklists/create" style={{
+              backgroundColor: '#2563eb',
+              color: 'white',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              fontWeight: '500',
+              display: 'inline-block',
+              transition: 'background-color 0.2s ease'
+            }}
+            className="hover:bg-blue-700">
             Create Checklist
           </a>
         </div>
       ) : (
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem'}} className="grid-container">
           {checklists.map(cl => (
-            <a key={cl.id} href={`/checklists/${cl.id}`} style={{display: 'block', height: '100%'}} className="card hover:shadow-lg transition-shadow duration-200 bg-white rounded-lg p-4 border border-gray-200 shadow h-full flex flex-col">
+            <a key={cl.id} href={`/checklists/${cl.id}`} style={{
+                display: 'block',
+                height: '100%',
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                padding: '16px',
+                border: '2px solid #e5e7eb',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                transition: 'all 0.2s ease'
+              }} 
+              className="h-full flex flex-col hover:shadow-xl hover:border-blue-200">
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-lg text-primary-700 mb-1 truncate">{cl.title}</h2>
