@@ -31,11 +31,11 @@ const ChecklistList: React.FC = () => {
     
     try {
       setActionLoading(prev => ({ ...prev, [id]: 'clone' }));
-      await cloneChecklist(id);
-      loadChecklists();
+      const clonedChecklist = await cloneChecklist(id);
+      // Navigate to the edit page of the newly created copy
+      window.location.href = `/edit-checklist/${clonedChecklist.id}?token=${clonedChecklist.edit_token}`;
     } catch (err) {
       setError('Failed to clone checklist. Please try again.');
-    } finally {
       setActionLoading(prev => {
         const newState = { ...prev };
         delete newState[id];
@@ -158,7 +158,7 @@ const ChecklistList: React.FC = () => {
                 height: '100%',
                 backgroundColor: 'white',
                 borderRadius: '12px',
-                padding: '20px',
+                padding: '20px 20px 8px 20px',
                 border: '2px solid #e5e7eb',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                 transition: 'all 0.2s ease',
@@ -167,96 +167,124 @@ const ChecklistList: React.FC = () => {
                 overflow: 'hidden'
               }} 
               className="h-full flex flex-col hover:shadow-xl hover:border-blue-200">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-semibold text-lg text-primary-700 mb-1 truncate">{cl.title}</h2>
+              <div style={{ height: '180px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="font-semibold text-lg text-primary-700 mb-1 truncate">{cl.title}</h2>
+                  </div>
+                  <div className="bg-primary-50 p-1 rounded-full flex-shrink-0 ml-1 w-8 h-8 flex items-center justify-center">
+                    <span className="text-primary-600 text-xs">→</span>
+                  </div>
                 </div>
-                <div className="bg-primary-50 p-1 rounded-full flex-shrink-0 ml-1 w-8 h-8 flex items-center justify-center">
-                  <span className="text-primary-600 text-xs">→</span>
+                
+                <div className="text-sm text-gray-600 mb-2">
+                  <div className="flex items-center">
+                    <span>{cl.categories.length || 0} categories</span>
+                  </div>
                 </div>
+                
+                {cl.categories && cl.categories.length > 0 && (
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {cl.categories.slice(0, 2).map((cat, idx) => (
+                      <div key={idx} className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center overflow-hidden">
+                        <span className="w-3 h-3 mr-1 inline-block bg-primary-100 rounded-full"></span>
+                        <span className="text-xs font-medium truncate">{cat.name}</span>
+                      </div>
+                    ))}
+                    {cl.categories.length > 2 && (
+                      <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center justify-center">
+                        <span className="text-xs text-gray-500">+{cl.categories.length - 2} more</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               
-              {cl.description && (
-                <p className="text-gray-600 text-sm line-clamp-2 mb-3">{cl.description}</p>
-              )}
-              
-              <div className="mt-auto pt-2 flex items-center text-xs text-gray-500">
-                <span className="flex items-center">
-                  <span className="w-4 h-4 mr-1 inline-block bg-primary-100 rounded-full"></span>
-                  {cl.categories?.length || 0} categories
-                </span>
-              </div>
-              
-              {/* Display categories in a grid if they exist */}
-              {cl.categories && cl.categories.length > 0 && (
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  {cl.categories.slice(0, 2).map((cat, idx) => (
-                    <div key={idx} className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center overflow-hidden">
-                      <span className="w-3 h-3 mr-1 inline-block bg-primary-100 rounded-full"></span>
-                      <span className="text-xs font-medium truncate">{cat.name}</span>
+              <div style={{ paddingTop: '6px', borderTop: '1px solid #f3f4f6', marginTop: '0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0', width: '100%', marginTop: '2px', marginBottom: '0' }}>
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.location.href = `/edit-checklist/${cl.id}?token=${cl.edit_token}`;
+                    }}
+                    style={{
+                      backgroundColor: '#f0fdf4',
+                      color: '#16a34a',
+                      padding: '5px 0',
+                      width: '100%',
+                      borderRadius: '6px 0 0 6px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    className="hover:bg-green-100 transition-colors"
+                    title="Edit checklist"
+                  >
+                    <div className="flex items-center justify-center w-full">
+                      <span>✎</span>
+                      <span className="ml-1">Edit</span>
                     </div>
-                  ))}
-                  {cl.categories.length > 2 && (
-                    <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center justify-center">
-                      <span className="text-xs text-gray-500">+{cl.categories.length - 2} more</span>
-                    </div>
-                  )}
+                  </button>
+                  
+                  <button 
+                    onClick={(e) => handleClone(e, cl.id)}
+                    disabled={actionLoading[cl.id] === 'clone'}
+                    style={{
+                      backgroundColor: '#ebf5ff',
+                      color: '#2563eb',
+                      padding: '5px 0',
+                      width: '100%',
+                      borderRadius: '0',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    className="hover:bg-blue-100 transition-colors"
+                    title="Clone checklist"
+                  >
+                    {actionLoading[cl.id] === 'clone' ? (
+                      <span className="animate-pulse">Cloning...</span>
+                    ) : (
+                      <div className="flex items-center justify-center w-full">
+                        <span>+</span>
+                        <span className="ml-1">Clone</span>
+                      </div>
+                    )}
+                  </button>
+
+                  <button 
+                    onClick={(e) => handleDelete(e, cl.id, cl.edit_token)}
+                    disabled={actionLoading[cl.id] === 'delete'}
+                    style={{
+                      backgroundColor: '#fee2e2',
+                      color: '#dc2626',
+                      padding: '5px 0',
+                      width: '100%',
+                      borderRadius: '0 6px 6px 0',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    className="hover:bg-red-100 transition-colors"
+                    title="Delete checklist"
+                  >
+                    {actionLoading[cl.id] === 'delete' ? (
+                      <span className="animate-pulse">Deleting...</span>
+                    ) : (
+                      <div className="flex items-center justify-center w-full">
+                        <span>×</span>
+                        <span className="ml-1">Delete</span>
+                      </div>
+                    )}
+                  </button>
                 </div>
-              )}
-              
-              <div className="mt-auto pt-4 flex items-center gap-2 justify-between border-t border-gray-100 mt-4">
-                <button 
-                  onClick={(e) => handleClone(e, cl.id)}
-                  disabled={actionLoading[cl.id] === 'clone'}
-                  style={{
-                    backgroundColor: '#ebf5ff',
-                    color: '#2563eb',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                  className="hover:bg-blue-100 transition-colors"
-                  title="Clone checklist"
-                >
-                  {actionLoading[cl.id] === 'clone' ? (
-                    <span className="animate-pulse">Cloning...</span>
-                  ) : (
-                    <>
-                      <span>+</span>
-                      <span>Clone</span>
-                    </>
-                  )}
-                </button>
-                <button 
-                  onClick={(e) => handleDelete(e, cl.id, cl.edit_token)}
-                  disabled={actionLoading[cl.id] === 'delete'}
-                  style={{
-                    backgroundColor: '#fee2e2',
-                    color: '#dc2626',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                  className="hover:bg-red-100 transition-colors"
-                  title="Delete checklist"
-                >
-                  {actionLoading[cl.id] === 'delete' ? (
-                    <span className="animate-pulse">Deleting...</span>
-                  ) : (
-                    <>
-                      <span>×</span>
-                      <span>Delete</span>
-                    </>
-                  )}
-                </button>
               </div>
             </a>
           ))}
